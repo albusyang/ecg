@@ -1,0 +1,4 @@
+h5py
+Keras
+tqdm
+unittest2
