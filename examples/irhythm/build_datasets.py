@@ -1,6 +1,3 @@
-from __future__ import division
-from __future__ import print_function
-
 import argparse
 import fnmatch
 import glob
@@ -34,7 +31,6 @@ def round_to_step(n, step):
         return n + (step - diff)
 
 def load_episodes(record, epi_ext):
-
     base = os.path.splitext(record)[0]
     ep_json = base + epi_ext
     ep_json = glob.glob(ep_json)[0]
@@ -103,7 +99,6 @@ def load_train(data_path, dev_frac, blacklist_paths):
     return train, dev
 
 def load_rev_id(record, epi_ext):
-
     base = os.path.splitext(record)[0]
     ep_json = base + epi_ext
     ep_json = glob.glob(ep_json)[0]

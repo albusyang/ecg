@@ -14,7 +14,7 @@ def predict(record):
     preproc = util.load(".")
     x = preproc.process_x([ecg])
 
-    with open("config.json", 'r') as f:  # 使用with语句打开文件
+    with open("config.json", 'r') as f:  
         params = json.load(f)
     params.update({
         "compile": False,
@@ -31,4 +31,4 @@ def predict(record):
 
 if __name__ == '__main__':
     import sys
-    print(predict(sys.argv[1]))  # 使用print函数的括号语法
+    print(predict(sys.argv[1]))

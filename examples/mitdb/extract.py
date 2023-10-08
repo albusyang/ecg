@@ -1,6 +1,4 @@
-from __future__ import print_function
-
-import cPickle as pickle
+import pickle
 import glob
 import numpy as np
 import os
@@ -50,7 +48,7 @@ def save(example, idx):
     files are saved in the same place as the raw data.
     """
     np.save(os.path.join(DATA, idx), example[0])
-    with open(os.path.join(DATA, "{}.pkl".format(idx)), 'w') as fid:
+    with open(os.path.join(DATA, "{}.pkl".format(idx)), 'wb') as fid:
         pickle.dump(example[1], fid)
 
 if __name__ == "__main__":
