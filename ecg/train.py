@@ -62,7 +62,7 @@ def train(args, params):
     if params.get("generator", False):
         train_gen = load.data_generator(batch_size, preproc, *train)
         dev_gen = load.data_generator(batch_size, preproc, *dev)
-        model.fit_generator(
+        model.fit(
             train_gen,
             steps_per_epoch=int(len(train[0]) / batch_size),
             epochs=MAX_EPOCHS,

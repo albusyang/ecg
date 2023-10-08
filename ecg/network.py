@@ -38,7 +38,7 @@ def add_conv_layers(layer, **params):
 def resnet_block(layer, num_filters, subsample_length, block_index, **params):
     """Add a ResNet block"""
     from keras.layers import Add, MaxPooling1D
-    from keras.layers.core import Lambda
+    from keras.layers import Lambda
 
     def zeropad(x):
         """Zero-padding function"""
@@ -80,8 +80,8 @@ def add_resnet_layers(layer, **params):
 
 def add_output_layer(layer, **params):
     """Add output layer"""
-    from keras.layers.core import Dense, Activation
-    from keras.layers.wrappers import TimeDistributed
+    from keras.layers import Dense, Activation
+    from keras.layers import TimeDistributed
     layer = TimeDistributed(Dense(params["num_categories"]))(layer)
     return Activation('softmax')(layer)
 
