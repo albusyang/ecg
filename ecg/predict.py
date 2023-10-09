@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-import keras
+import tensorflow as tf
 import os
 
 import load
@@ -15,7 +15,7 @@ def predict(data_json, model_path):
     # 对数据进行预处理
     x, y = preproc.process(*dataset)
     # 加载模型
-    model = keras.models.load_model(model_path)
+    model = tf.keras.models.load_model(model_path)
     # 进行预测
     probs = model.predict(x, verbose=1)
 

@@ -1,10 +1,10 @@
 import json
-import keras
 import numpy as np
 import os
 import random
 import scipy.io as sio
 import tqdm
+import tensorflow as tf
 
 STEP = 256
 
@@ -45,7 +45,7 @@ class Preproc:
     def process_y(self, y):
         """处理y数据"""
         y = pad([[self.class_to_int[c] for c in s] for s in y], val=3, dtype=np.int32)
-        y = keras.utils.to_categorical(y, num_classes=len(self.classes))
+        y = tf.keras.utils.to_categorical(y, num_classes=len(self.classes))
         return y
 
 def pad(x, val=0, dtype=np.float32):

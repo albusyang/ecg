@@ -1,21 +1,18 @@
-from keras import backend as K
+import tensorflow as tf
 
 def _bn_relu(layer, dropout=0, **params):
     """Batch normalization and ReLU activation"""
-    from keras.layers import BatchNormalization, Activation
-    layer = BatchNormalization()(layer)
-    layer = Activation(params["conv_activation"])(layer)
+    layer = tf.keras.layers.BatchNormalization()(layer)
+    layer = tf.keras.layers.Activation(params["conv_activation"])(layer)
 
     if dropout > 0:
-        from keras.layers import Dropout
-        layer = Dropout(params["conv_dropout"])(layer)
+        layer = tf.keras.layers.Dropout(params["conv_dropout"])(layer)
 
     return layer
 
 def add_conv_weight(layer, filter_length, num_filters, subsample_length=1, **params):
     """Add convolutional layer"""
-    from keras.layers import Conv1D 
-    layer = Conv1D(
+    layer = tf.keras.layers.Conv1D(
         filters=num_filters,
         kernel_size=filter_length,
         strides=subsample_length,
@@ -37,13 +34,10 @@ def add_conv_layers(layer, **params):
 
 def resnet_block(layer, num_filters, subsample_length, block_index, **params):
     """Add a ResNet block"""
-    from keras.layers import Add, MaxPooling1D
-    from keras.layers import Lambda
-
     def zeropad(x):
         """Zero-padding function"""
-        y = K.zeros_like(x)
-        return K.concatenate([x, y], axis=2)
+        y = tf.keras.backend.zeros_like(x)
+        return tf.keras.backend.concatenate([x, y], axis=2)
 
     def zeropad_output_shape(input_shape):
         """Shape function for Lambda layer"""
@@ -52,16 +46,16 @@ def resnet_block(layer, num_filters, subsample_length, block_index, **params):
         shape[2] *= 2
         return tuple(shape)
 
-    shortcut = MaxPooling1D(pool_size=subsample_length)(layer)
+    shortcut = tf.keras.layers.MaxPooling1D(pool_size=subsample_length)(layer)
     zero_pad = (block_index % params["conv_increase_channels_at"]) == 0 and block_index > 0
     if zero_pad:
-        shortcut = Lambda(zeropad, output_shape=zeropad_output_shape)(shortcut)
+        shortcut = tf.keras.layers.Lambda(zeropad, output_shape=zeropad_output_shape)(shortcut)
 
     for i in range(params["conv_num_skip"]):
         if not (block_index == 0 and i == 0):
             layer = _bn_relu(layer, dropout=params["conv_dropout"] if i > 0 else 0, **params)
         layer = add_conv_weight(layer, params["conv_filter_length"], num_filters, subsample_length if i == 0 else 1, **params)
-    layer = Add()([shortcut, layer])
+    layer = tf.keras.layers.Add()([shortcut, layer])
     return layer
 
 def get_num_filters_at_index(index, num_start_filters, **params):
@@ -80,22 +74,17 @@ def add_resnet_layers(layer, **params):
 
 def add_output_layer(layer, **params):
     """Add output layer"""
-    from keras.layers import Dense, Activation
-    from keras.layers import TimeDistributed
-    layer = TimeDistributed(Dense(params["num_categories"]))(layer)
-    return Activation('softmax')(layer)
+    layer = tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(params["num_categories"]))(layer)
+    return tf.keras.layers.Activation('softmax')(layer)
 
 def add_compile(model, **params):
     """Compile the model"""
-    from keras.optimizers import Adam
-    optimizer = Adam(lr=params["learning_rate"], clipnorm=params.get("clipnorm", 1))
+    optimizer = tf.keras.optimizers.Adam(lr=params["learning_rate"], clipnorm=params.get("clipnorm", 1))
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
 def build_network(**params):
     """Build the entire network"""
-    from keras.models import Model
-    from keras.layers import Input
-    inputs = Input(shape=params['input_shape'], dtype='float32', name='inputs')
+    inputs = tf.keras.layers.Input(shape=params['input_shape'], dtype='float32', name='inputs')
 
     if params.get('is_regular_conv', False):
         layer = add_conv_layers(inputs, **params)
@@ -103,7 +92,7 @@ def build_network(**params):
         layer = add_resnet_layers(inputs, **params)
 
     output = add_output_layer(layer, **params)
-    model = Model(inputs=[inputs], outputs=[output])
+    model = tf.keras.Model(inputs=[inputs], outputs=[output])
     if params.get("compile", True):
         add_compile(model, **params)
     return model

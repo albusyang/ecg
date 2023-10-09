@@ -1,12 +1,12 @@
 import json
-import keras
 import numpy as np
-import scipy.io as sio
+# import scipy.io as sio
 import scipy.stats as sst
+# import tensorflow as tf
 
-import load
-import network
-import util
+from ecg import load
+from ecg import network
+from ecg import util
 
 def predict(record):
     """预测给定记录的类别"""
